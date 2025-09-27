@@ -97,13 +97,14 @@ def print_solution_animation(result: SearchResult, delay: float = 0.5, detailed:
             if delay > 0 and i < len(detailed_solution) - 1:
                 time.sleep(delay)
 
-def store_solution(result: SearchResult, level_name: str = "level0"):
+def store_solution(level_matrix: List[List[str]], result: SearchResult, level_name: str = "level0"):
     """
-    Store the detailed solution moves into a file in pySokoban format
+    Store the detailed solution moves into a file in pySokoban format.
+    We store the level in the pySokoban directory for rendering as well.
     
     Args:
-        result: SearchResult containing the solution
-        level_name: Name of the level to create the file for
+        result: SearchResult containing the solution.
+        level_name: Name of the level to create the file for.
     """
     if not result.success or not result.final_state:
         print("No solution to store")
@@ -119,6 +120,15 @@ def store_solution(result: SearchResult, level_name: str = "level0"):
         with open(file_path, 'w') as f:
             f.write(''.join(detailed_moves))
         print(f"Detailed solution moves stored in {file_path}")
+    except Exception as e:
+        print(f"Error storing solution: {e}")
+
+    # Store the level matrix
+    level_file_path = '../pySokoban/levels/test/{}'.format(level_name)
+    try:
+        with open(level_file_path, 'w') as f:
+            for row in level_matrix:
+                f.write(''.join(row) + '\n')
     except Exception as e:
         print(f"Error storing solution: {e}")
 

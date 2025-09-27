@@ -2,7 +2,8 @@
 # Description: A sokoban implementation using python & pyGame
 # Author: Kazantzakis Nikos <kazantzakisnikos@gmail.com>
 # Date: 2015
-# Last Modified: 31-03-2016
+# Last Modified: 27-09-2025
+# Contributor: lilkhoa
 
 import pygame
 import time
@@ -39,7 +40,7 @@ def drawLevel(matrix_to_draw):
         player = pygame.transform.scale(player, (new_image_size,new_image_size))	
         
     # Just a Dictionary (associative array in pyhton's lingua) to map images to characters used in level design 
-    images = {'#': wall, ' ': space, '$': box, '.': target, '@': player, '*': box_on_target}
+    images = {'#': wall, ' ': space, '$': box, '.': target, '@': player, '*': box_on_target, '+': player}
     
     # Get image size. Images are always squares so it doesn't care if you get width or height
     box_size = wall.get_width()
@@ -61,7 +62,7 @@ def movePlayer(direction,myLevel):
     x = myLevel.getPlayerPosition()[0]
     y = myLevel.getPlayerPosition()[1]
     
-    global target_found
+    # Removed global target_found - now using proper + symbol logic
     
     #print boxes
     print(myLevel.getBoxes())
@@ -73,9 +74,8 @@ def movePlayer(direction,myLevel):
         if matrix[y][x-1] == " ":
             print("OK Space Found")
             matrix[y][x-1] = "@"
-            if target_found == True:
+            if matrix[y][x] == "+":  # Player was on target
                 matrix[y][x] = "."
-                target_found = False
             else:
                 matrix[y][x] = " "
         
@@ -85,17 +85,15 @@ def movePlayer(direction,myLevel):
             if matrix[y][x-2] == " ":
                 matrix[y][x-2] = "$"
                 matrix[y][x-1] = "@"
-                if target_found == True:
+                if matrix[y][x] == "+":  # Player was on target
                     matrix[y][x] = "."
-                    target_found = False
                 else:
                     matrix[y][x] = " "
             elif matrix[y][x-2] == ".":
                 matrix[y][x-2] = "*"
                 matrix[y][x-1] = "@"
-                if target_found == True:
+                if matrix[y][x] == "+":  # Player was on target
                     matrix[y][x] = "."
-                    target_found = False
                 else:
                     matrix[y][x] = " "
                 
@@ -105,31 +103,28 @@ def movePlayer(direction,myLevel):
             print("Box on target Found")
             if matrix[y][x-2] == " ":
                 matrix[y][x-2] = "$"
-                matrix[y][x-1] = "@"
-                if target_found == True:
+                matrix[y][x-1] = "+"  # Player on target
+                if matrix[y][x] == "+":  # Player was on target
                     matrix[y][x] = "."
                 else:
                     matrix[y][x] = " "
-                target_found = True
                 
             elif matrix[y][x-2] == ".":
                 matrix[y][x-2] = "*"
-                matrix[y][x-1] = "@"
-                if target_found == True:
+                matrix[y][x-1] = "+"  # Player on target
+                if matrix[y][x] == "+":  # Player was on target
                     matrix[y][x] = "."
                 else:
                     matrix[y][x] = " "
-                target_found = True
                 
         # if is_target
         elif matrix[y][x-1] == ".":
             print("Target Found")
-            matrix[y][x-1] = "@"
-            if target_found == True:
+            matrix[y][x-1] = "+"  # Player on target
+            if matrix[y][x] == "+":  # Player was on target
                 matrix[y][x] = "."
             else:
                 matrix[y][x] = " "
-            target_found = True
         
         # else
         else:
@@ -142,9 +137,8 @@ def movePlayer(direction,myLevel):
         if matrix[y][x+1] == " ":
             print("OK Space Found")
             matrix[y][x+1] = "@"
-            if target_found == True:
+            if matrix[y][x] == "+":  # Player was on target
                 matrix[y][x] = "."
-                target_found = False
             else:
                 matrix[y][x] = " "
         
@@ -154,18 +148,16 @@ def movePlayer(direction,myLevel):
             if matrix[y][x+2] == " ":
                 matrix[y][x+2] = "$"
                 matrix[y][x+1] = "@"
-                if target_found == True:
+                if matrix[y][x] == "+":  # Player was on target
                     matrix[y][x] = "."
-                    target_found = False
                 else:
                     matrix[y][x] = " "
             
             elif matrix[y][x+2] == ".":
                 matrix[y][x+2] = "*"
                 matrix[y][x+1] = "@"
-                if target_found == True:
+                if matrix[y][x] == "+":  # Player was on target
                     matrix[y][x] = "."
-                    target_found = False
                 else:
                     matrix[y][x] = " "				
         
@@ -174,31 +166,28 @@ def movePlayer(direction,myLevel):
             print("Box on target Found")
             if matrix[y][x+2] == " ":
                 matrix[y][x+2] = "$"
-                matrix[y][x+1] = "@"
-                if target_found == True:
+                matrix[y][x+1] = "+"  # Player on target
+                if matrix[y][x] == "+":  # Player was on target
                     matrix[y][x] = "."
                 else:
                     matrix[y][x] = " "
-                target_found = True
                 
             elif matrix[y][x+2] == ".":
                 matrix[y][x+2] = "*"
-                matrix[y][x+1] = "@"
-                if target_found == True:
+                matrix[y][x+1] = "+"  # Player on target
+                if matrix[y][x] == "+":  # Player was on target
                     matrix[y][x] = "."
                 else:
                     matrix[y][x] = " "
-                target_found = True
             
         # if is_target
         elif matrix[y][x+1] == ".":
             print("Target Found")
-            matrix[y][x+1] = "@"
-            if target_found == True:
+            matrix[y][x+1] = "+"  # Player on target
+            if matrix[y][x] == "+":  # Player was on target
                 matrix[y][x] = "."
             else:
                 matrix[y][x] = " "
-            target_found = True
             
         # else
         else:
@@ -211,9 +200,8 @@ def movePlayer(direction,myLevel):
         if matrix[y+1][x] == " ":
             print("OK Space Found")
             matrix[y+1][x] = "@"
-            if target_found == True:
+            if matrix[y][x] == "+":  # Player was on target
                 matrix[y][x] = "."
-                target_found = False
             else:
                 matrix[y][x] = " "
         
@@ -223,18 +211,16 @@ def movePlayer(direction,myLevel):
             if matrix[y+2][x] == " ":
                 matrix[y+2][x] = "$"
                 matrix[y+1][x] = "@"
-                if target_found == True:
+                if matrix[y][x] == "+":  # Player was on target
                     matrix[y][x] = "."
-                    target_found = False
                 else:
                     matrix[y][x] = " "
             
             elif matrix[y+2][x] == ".":
                 matrix[y+2][x] = "*"
                 matrix[y+1][x] = "@"
-                if target_found == True:
+                if matrix[y][x] == "+":  # Player was on target
                     matrix[y][x] = "."
-                    target_found = False
                 else:
                     matrix[y][x] = " "
         
@@ -243,31 +229,28 @@ def movePlayer(direction,myLevel):
             print("Box on target Found")
             if matrix[y+2][x] == " ":
                 matrix[y+2][x] = "$"
-                matrix[y+1][x] = "@"
-                if target_found == True:
+                matrix[y+1][x] = "+"  # Player on target
+                if matrix[y][x] == "+":  # Player was on target
                     matrix[y][x] = "."
                 else:
                     matrix[y][x] = " "
-                target_found = True
                 
             elif matrix[y+2][x] == ".":
                 matrix[y+2][x] = "*"
-                matrix[y+1][x] = "@"
-                if target_found == True:
+                matrix[y+1][x] = "+"  # Player on target
+                if matrix[y][x] == "+":  # Player was on target
                     matrix[y][x] = "."
                 else:
                     matrix[y][x] = " "
-                target_found = True
         
         # if is_target
         elif matrix[y+1][x] == ".":
             print("Target Found")
-            matrix[y+1][x] = "@"
-            if target_found == True:
+            matrix[y+1][x] = "+"  # Player on target
+            if matrix[y][x] == "+":  # Player was on target
                 matrix[y][x] = "."
             else:
                 matrix[y][x] = " "
-            target_found = True
             
         # else
         else:
@@ -280,9 +263,8 @@ def movePlayer(direction,myLevel):
         if matrix[y-1][x] == " ":
             print("OK Space Found")
             matrix[y-1][x] = "@"
-            if target_found == True:
+            if matrix[y][x] == "+":  # Player was on target
                 matrix[y][x] = "."
-                target_found = False
             else:
                 matrix[y][x] = " "
         
@@ -292,18 +274,16 @@ def movePlayer(direction,myLevel):
             if matrix[y-2][x] == " ":
                 matrix[y-2][x] = "$"
                 matrix[y-1][x] = "@"
-                if target_found == True:
+                if matrix[y][x] == "+":  # Player was on target
                     matrix[y][x] = "."
-                    target_found = False
                 else:
                     matrix[y][x] = " "
 
             elif matrix[y-2][x] == ".":
                 matrix[y-2][x] = "*"
                 matrix[y-1][x] = "@"
-                if target_found == True:
+                if matrix[y][x] == "+":  # Player was on target
                     matrix[y][x] = "."
-                    target_found = False
                 else:
                     matrix[y][x] = " "					
                     
@@ -312,31 +292,28 @@ def movePlayer(direction,myLevel):
             print("Box on target Found")
             if matrix[y-2][x] == " ":
                 matrix[y-2][x] = "$"
-                matrix[y-1][x] = "@"
-                if target_found == True:
+                matrix[y-1][x] = "+"  # Player on target
+                if matrix[y][x] == "+":  # Player was on target
                     matrix[y][x] = "."
                 else:
                     matrix[y][x] = " "
-                target_found = True
                 
             elif matrix[y-2][x] == ".":
                 matrix[y-2][x] = "*"
-                matrix[y-1][x] = "@"
-                if target_found == True:
+                matrix[y-1][x] = "+"  # Player on target
+                if matrix[y][x] == "+":  # Player was on target
                     matrix[y][x] = "."
                 else:
                     matrix[y][x] = " "
-                target_found = True
                     
         # if is_target
         elif matrix[y-1][x] == ".":
             print("Target Found")
-            matrix[y-1][x] = "@"
-            if target_found == True:
+            matrix[y-1][x] = "+"  # Player on target
+            if matrix[y][x] == "+":  # Player was on target
                 matrix[y][x] = "."
             else:
                 matrix[y][x] = " "
-            target_found = True
             
         # else
         else:
@@ -361,9 +338,6 @@ def initLevel(level_set,level):
     # Draw this level
     drawLevel(myLevel.getMatrix())
     
-    global target_found
-    target_found = False
-    
 
 # Create the environment
 myEnvironment = Environment()
@@ -375,7 +349,7 @@ theme = "default"
 level_set = "test"
 
 # Set the start Level
-current_level = 0
+current_level = 5
 
 # Initialize Level
 initLevel(level_set,current_level)
