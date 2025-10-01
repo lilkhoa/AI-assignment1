@@ -101,11 +101,11 @@ class State:
 
 
 class AStarState(State):
-    """State class specifically for A* search with cost tracking."""
+    """State class specifically for A* search."""
     
     def __init__(self, matrix: List[List[str]], player_pos: Tuple[int, int], 
                  box_positions: Set[Tuple[int, int]], goal_positions: Set[Tuple[int, int]]):
-        """Initialize A* state with cost tracking."""
+        """Initialize A* state."""
         super().__init__(matrix, player_pos, box_positions, goal_positions)
         self.g_cost = 0  # Cost from start
         self.h_cost = 0  # Heuristic cost to goal
@@ -131,7 +131,7 @@ def create_initial_state(matrix: List[List[str]]) -> AStarState:
         matrix: 2D list representing the level.
         
     Returns:
-        SokobanState: Initial state of the puzzle.
+        AStarState: Initial state of the puzzle.
     """
     player_pos = None
     box_positions = set()

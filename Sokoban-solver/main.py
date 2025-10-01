@@ -31,7 +31,6 @@ def load_level_from_original_format(level_path: str) -> List[List[str]]:
         
         matrix = []
         for line in lines:
-            # Remove newline but preserve spaces for proper level structure.
             row = list(line.rstrip('\n'))
             if row:  # Skip empty lines.
                 matrix.append(row)
@@ -74,7 +73,6 @@ def print_solution_animation(result: SearchResult, delay: float = 0.5, detailed:
         
         # Apply each detailed move
         for i, move in enumerate(detailed_moves):
-            # Apply the move
             new_state = apply_single_move(state, move)
             
             if new_state:
@@ -103,6 +101,7 @@ def store_solution(level_matrix: List[List[str]], result: SearchResult, level_na
     We store the level in the pySokoban directory for rendering as well.
     
     Args:
+        level_matrix: The original level matrix.
         result: SearchResult containing the solution.
         level_name: Name of the level to create the file for.
     """
@@ -180,7 +179,7 @@ def main():
         use_deadlock_detection=not args.no_deadlock,
     )
 
-    result.solution = get_detailed_solution_moves(result.final_state) if result.success else []
+    # result.solution = get_detailed_solution_moves(result.final_state) if result.success else []
     print(result)
     store_solution(matrix, result, level_name=level_name)
 

@@ -1,5 +1,5 @@
 """
-Move Generation
+Move Generation.
 """
 
 from typing import List, Tuple, Set
@@ -169,7 +169,7 @@ class MoveGenerator:
             move: Tuple (old_box_pos, direction, new_box_pos, player_push_pos).
             
         Returns:
-            New SokobanState or None if move is invalid.
+            New AStarState or None if move is invalid.
         """
         old_box_pos, direction, new_box_pos, player_push_pos = move
         
@@ -191,31 +191,8 @@ class MoveGenerator:
         new_state.parent = self.state
         
         return new_state
-    
-    def get_solution_path(self, goal_state: State) -> List[str]:
-        """
-        Extract solution path from goal state by following parent pointers.
-        
-        Args:
-            goal_state: The solved state.
-            
-        Returns:
-            List of move directions leading to solution.
-        """
-        path = []
-        current = goal_state
-        
-        # Trace back through parent states
-        while current.parent is not None:
-            if current.move_action:
-                path.append(current.move_action)
-            current = current.parent
-        
-        # Reverse to get forward path.
-        path.reverse()
-        return path
-    
-    def get_detailed_solution_with_player_moves(self, goal_state: State) -> List[str]:
+
+    def get_detailed_solution_moves(self, goal_state: State) -> List[str]:
         """
         Extract detailed solution path including all player movement steps.
         
@@ -377,19 +354,6 @@ def generate_moves(state: AStarState) -> List[AStarState]:
     generator = MoveGenerator(state)
     return generator.get_successor_states()
 
-def get_solution_moves(goal_state: State) -> List[str]:
-    """
-    Convenience function to extract solution path (push moves only).
-    
-    Args:
-        goal_state: Solved state.
-        
-    Returns:
-        List of move directions (push moves only).
-    """
-    generator = MoveGenerator(goal_state)
-    return generator.get_solution_path(goal_state)
-
 def get_detailed_solution_moves(goal_state: State) -> List[str]:
     """
     Convenience function to extract detailed solution path with all player movements.
@@ -401,7 +365,7 @@ def get_detailed_solution_moves(goal_state: State) -> List[str]:
         List of all move directions including player positioning moves.
     """
     generator = MoveGenerator(goal_state)
-    return generator.get_detailed_solution_with_player_moves(goal_state)
+    return generator.get_detailed_solution_moves(goal_state)
 
 def apply_single_move(state, move_direction):
         """

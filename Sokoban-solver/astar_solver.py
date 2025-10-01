@@ -48,14 +48,13 @@ def get_memory_usage_mb() -> float:
     return process.memory_info().rss / 1024 / 1024
 
 class AStarSolver:
-    """A* search algorithm implementation for Sokoban."""
+    """A* search algorithm implementation for solving Sokoban."""
     
     def __init__(self, max_states: int = 100000, max_time: float = 300.0, use_deadlock_detection: bool = True):
         """
         Initialize A* solver with configuration.
         
         Args:
-            heuristic_name: Name of heuristic function to use.
             max_states: Maximum states to explore before giving up.
             max_time: Maximum time in seconds before timeout.
             use_deadlock_detection: Whether to use deadlock pruning.
@@ -153,7 +152,7 @@ class AStarSolver:
             
             # Check if goal reached.
             if current_state.is_goal_state():
-                solution_moves = MoveGenerator(current_state).get_solution_path(current_state)
+                solution_moves = MoveGenerator(current_state).get_detailed_solution_moves(current_state)
                 final_memory = get_memory_usage_mb()
                 return SearchResult(
                     success=True,
@@ -207,16 +206,6 @@ class AStarSolver:
             error_message="No solution exists (open list exhausted)",
             memory_used_mb=final_memory - initial_memory,
         )
-    
-    def get_statistics(self) -> Dict:
-        """Get detailed search statistics."""
-        return {
-            'states_explored': self.states_explored,
-            'states_generated': self.states_generated,
-            'deadlocks_detected': self.deadlocks_detected,
-            'duplicate_states': self.duplicate_states,
-            'deadlock_pruning_enabled': self.use_deadlock_detection
-        }
 
 class SokobanAStar:
     """Main interface for Sokoban A* solving."""
@@ -234,11 +223,9 @@ class SokobanAStar:
         
         Args:
             matrix: 2D list representing the puzzle.
-            heuristic: Heuristic function name.
             max_states: Maximum states to explore.
             max_time: Maximum solving time in seconds.
             use_deadlock_detection: Enable deadlock pruning.
-            verbose: Print progress information.
             
         Returns:
             SearchResult with solution and statistics.
