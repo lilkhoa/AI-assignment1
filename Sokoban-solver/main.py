@@ -97,7 +97,7 @@ def print_solution_animation(result: SearchResult, delay: float = 0.5, detailed:
             if delay > 0 and i < len(detailed_solution) - 1:
                 time.sleep(delay)
 
-def store_solution(level_matrix: List[List[str]], result: SearchResult, level_name: str = "level0"):
+def store_solution(level_matrix: List[List[str]], result: SearchResult, level_name: str):
     """
     Store the detailed solution moves into a file in pySokoban format.
     We store the level in the pySokoban directory for rendering as well.
@@ -107,24 +107,36 @@ def store_solution(level_matrix: List[List[str]], result: SearchResult, level_na
         level_name: Name of the level to create the file for.
     """
     if not result.success or not result.final_state:
-        print("No solution to store")
+        print('No solution to store')
         return
     
     # Get detailed moves
     detailed_moves = get_detailed_solution_moves(result.final_state)
     
+    # Store the solution in the ./result directory
+    level_mode = level_name.split('_')[0]  # Extract mode from level name
+    level_dir = f'./results/{level_mode}'
+    os.makedirs(level_dir, exist_ok=True)
+    result_file_path = f'./results/{level_mode}/{level_name}_solution.txt'
+    try:
+        with open(result_file_path, 'w') as f:
+            f.write(''.join(detailed_moves))
+            print(f'Solution stored in {result_file_path}')
+    except Exception as e:
+        print(f'Error storing solution: {e}')
+
+
+    # This one is for rendering
     # Create file path
-    file_path = '../pySokoban/levels/solver/{}'.format(level_name)
-    
+    file_path = '../pySokoban/levels/solver/{}.txt'.format(level_name)
     try:
         with open(file_path, 'w') as f:
             f.write(''.join(detailed_moves))
-        print(f"Detailed solution moves stored in {file_path}")
     except Exception as e:
         print(f"Error storing solution: {e}")
 
     # Store the level matrix
-    level_file_path = '../pySokoban/levels/test/{}'.format(level_name)
+    level_file_path = '../pySokoban/levels/test/{}.txt'.format(level_name)
     try:
         with open(level_file_path, 'w') as f:
             for row in level_matrix:
@@ -135,6 +147,8 @@ def store_solution(level_matrix: List[List[str]], result: SearchResult, level_na
 def main():
     """Main entry point"""
     parser = argparse.ArgumentParser(description="Sokoban A* Solver")
+    parser.add_argument("--mode", choices=["easy", "medium", "hard"], default="easy",
+                          help="Difficulty mode for level selection")
     parser.add_argument("--level", help="Specific level file to solve")
     parser.add_argument("--max-states", type=int, default=10000000,
                        help="Maximum states to explore")
@@ -142,36 +156,33 @@ def main():
                        help="Maximum time in seconds")
     parser.add_argument("--no-deadlock", action="store_true",
                        help="Disable deadlock detection")
-    parser.add_argument("--detailed", "-d", action="store_true",
-                       help="Show detailed player movement in animation")
-    parser.add_argument("--delay", type=float, default=0.5,
-                       help="Animation delay between moves in seconds")
-    parser.add_argument("--level-name", type=str, default="level0",
-                       help="Level name for loading from pySokoban levels (default: level0)")
     
     args = parser.parse_args()
-    
-    if args.level:
-        if not os.path.exists(args.level):
-            print(f"Level file not found: {args.level}")
-            return
-        
-        matrix = load_level_from_original_format(args.level)
-        if matrix is None:
-            return
-        
-        print_level(matrix, args.level_name)
-        
-        solver = SokobanAStar()
-        result = solver.solve_puzzle(
-            matrix,
-            max_states=args.max_states,
-            max_time=args.max_time,
-            use_deadlock_detection=not args.no_deadlock,
-        )
 
-        print(result)
-        store_solution(result, level_name=args.level_name)
+    level_to_solve = f"test_level/{args.mode}/{args.mode}_{args.level}.txt"
+    level_name = f"{args.mode}_{args.level}"
+
+    if not os.path.exists(level_to_solve):
+        print(f"Level file not found: {level_to_solve}")
+        return
+
+    matrix = load_level_from_original_format(level_to_solve)
+    if matrix is None:
+        return
+    
+    print_level(matrix, level_name)
+    
+    solver = SokobanAStar()
+    result = solver.solve_puzzle(
+        matrix,
+        max_states=args.max_states,
+        max_time=args.max_time,
+        use_deadlock_detection=not args.no_deadlock,
+    )
+
+    result.solution = get_detailed_solution_moves(result.final_state) if result.success else []
+    print(result)
+    store_solution(matrix, result, level_name=level_name)
 
 if __name__ == "__main__":
     main()

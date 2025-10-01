@@ -6,13 +6,13 @@ class Level:
 	matrix = []
 	matrix_history = []
 	
-	def __init__(self,set,level_num):
+	def __init__(self,set,level_name):
 		
 		del self.matrix[:]
 		del self.matrix_history[:]
 		
 		# Create level
-		with open(os.path.dirname(os.path.abspath(__file__)) + '/levels/' + set + '/level' + str(level_num), 'r') as f:
+		with open(os.path.dirname(os.path.abspath(__file__)) + '/levels/' + set + '/' + level_name, 'r') as f:
 			for row in f.read().splitlines():
 				self.matrix.append(list(row))
 			
@@ -38,7 +38,7 @@ class Level:
 		for i in range (0,len(self.matrix)):
 			# Iterate all columns
 			for k in range (0,len(self.matrix[i])-1):
-				if self.matrix[i][k] == "@":
+				if self.matrix[i][k] == "@" or self.matrix[i][k] == "+":
 					return [k,i]
 
 	def getBoxes(self):

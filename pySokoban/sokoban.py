@@ -2,8 +2,7 @@
 # Description: A sokoban implementation using python & pyGame
 # Author: Kazantzakis Nikos <kazantzakisnikos@gmail.com>
 # Date: 2015
-# Last Modified: 27-09-2025
-# Contributor: lilkhoa
+# Last Modified: 31-03-2016
 
 import pygame
 import time
@@ -330,10 +329,10 @@ def movePlayer(direction,myLevel):
         # current_level += 1
         # initLevel(level_set,current_level)	
         
-def initLevel(level_set,level):
+def initLevel(level_set,level_name):
     # Create an instance of this Level
     global myLevel
-    myLevel = Level(level_set,level)
+    myLevel = Level(level_set,level_name)
 
     # Draw this level
     drawLevel(myLevel.getMatrix())
@@ -349,7 +348,7 @@ theme = "default"
 level_set = "test"
 
 # Set the start Level
-current_level = 5
+current_level = "medium_2.txt"
 
 # Initialize Level
 initLevel(level_set,current_level)
@@ -359,26 +358,28 @@ target_found = False
 # For auto-solving
 solver = True
 if solver:
-    with open('./levels/solver/level' + str(current_level), 'r') as f:
+    with open(f'./levels/solver/{current_level}', 'r') as f:
         solution = f.readlines()[-1].strip()
     solution += "E"
 
 while True:
     if solver:
-        for move in solution:
-            if move == 'L':
-                movePlayer("L",myLevel)
-            elif move == 'R':
-                movePlayer("R",myLevel)
-            elif move == 'D':
-                movePlayer("D",myLevel)
-            elif move == 'U':
-                movePlayer("U",myLevel)
-            elif move == 'E':
-                solver = False
-                pygame.quit()
-                sys.exit()
-            time.sleep(0.5)
+        for event in pygame.event.get():
+            if event.type == pygame.KEYDOWN:
+                for move in solution:
+                    if move == 'L':
+                        movePlayer("L",myLevel)
+                    elif move == 'R':
+                        movePlayer("R",myLevel)
+                    elif move == 'D':
+                        movePlayer("D",myLevel)
+                    elif move == 'U':
+                        movePlayer("U",myLevel)
+                    elif move == 'E':
+                        solver = False
+                        pygame.quit()
+                        sys.exit()
+                    time.sleep(0.5)
         
     for event in pygame.event.get():
         if event.type == pygame.KEYDOWN:
