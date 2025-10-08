@@ -6,8 +6,7 @@ import heapq
 import time
 import psutil
 import os
-from typing import List, Dict, Set, Optional, Tuple
-from collections import defaultdict
+from typing import List
 
 from sokoban_state import AStarState
 from move_generation import MoveGenerator
@@ -215,7 +214,7 @@ class SokobanAStar:
         self.last_result = None
     
     def solve_puzzle(self, matrix: List[List[str]],
-                    max_states: int = 100000,
+                    max_states: int = 1000000,
                     max_time: float = 300.0,
                     use_deadlock_detection: bool = True) -> SearchResult:
         """

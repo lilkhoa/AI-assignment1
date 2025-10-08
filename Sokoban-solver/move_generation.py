@@ -341,19 +341,6 @@ class MoveGenerator:
         solution.reverse()
         return solution
 
-def generate_moves(state: AStarState) -> List[AStarState]:
-    """
-    Convenience function to generate successor states.
-    
-    Args:
-        state: Current AStarState.
-        
-    Returns:
-        List of successor states.
-    """
-    generator = MoveGenerator(state)
-    return generator.get_successor_states()
-
 def get_detailed_solution_moves(goal_state: State) -> List[str]:
     """
     Convenience function to extract detailed solution path with all player movements.
@@ -366,73 +353,3 @@ def get_detailed_solution_moves(goal_state: State) -> List[str]:
     """
     generator = MoveGenerator(goal_state)
     return generator.get_detailed_solution_moves(goal_state)
-
-def apply_single_move(state, move_direction):
-        """
-        Apply a single move to the state and return new state.
-        This function is used for animation.
-        
-        Args:
-            state: Current SokobanState.
-            move_direction: Direction to move ('U', 'D', 'L', 'R').
-            
-        Returns:
-            New SokobanState after applying the move, or None if invalid.
-        """
-        # Direction mappings.
-        direction_map = {
-            'U': (0, -1),
-            'D': (0, 1), 
-            'L': (-1, 0),
-            'R': (1, 0)
-        }
-        
-        if move_direction not in direction_map:
-            return None
-        
-        dx, dy = direction_map[move_direction]
-        player_x, player_y = state.player_pos
-        new_player_x = player_x + dx
-        new_player_y = player_y + dy
-        new_player_pos = (new_player_x, new_player_y)
-        
-        # Check if new position is valid.
-        if not (0 <= new_player_y < len(state.matrix) and 0 <= new_player_x < len(state.matrix[new_player_y])):
-            return None
-        
-        # Check if new position is a wall.
-        if state.matrix[new_player_y][new_player_x] == '#':
-            return None
-        
-        new_boxes = set(state.box_positions)
-        
-        # Check if there's a box at the new position.
-        if new_player_pos in state.box_positions:
-            # Player is pushing a box.
-            box_new_x = new_player_x + dx
-            box_new_y = new_player_y + dy
-            box_new_pos = (box_new_x, box_new_y)
-            
-            # Check if box can be pushed.
-            if not (0 <= box_new_y < len(state.matrix) and 0 <= box_new_x < len(state.matrix[box_new_y])):
-                return None  # Box would go out of bounds.
-                
-            if state.matrix[box_new_y][box_new_x] == '#':
-                return None  # Box would hit wall.
-                
-            if box_new_pos in state.box_positions:
-                return None  # Box would hit another box.
-            
-            # Move the box.
-            new_boxes.remove(new_player_pos)
-            new_boxes.add(box_new_pos)
-        
-        # Create new state
-        new_state = AStarState(
-            matrix=state.matrix,
-            player_pos=new_player_pos,
-            box_positions=new_boxes,
-            goal_positions=state.goal_positions
-        )
-        
-        return new_state

@@ -12,8 +12,7 @@ from typing import List
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from astar_solver import SokobanAStar, SearchResult
-from sokoban_state import create_initial_state
-from move_generation import get_detailed_solution_moves, apply_single_move
+from move_generation import get_detailed_solution_moves
 
 def load_level_from_original_format(level_path: str) -> List[List[str]]:
     """
@@ -46,54 +45,6 @@ def print_level(matrix: List[List[str]], level_name: str = ""):
     for row in matrix:
         print(''.join(row))
     print()
-
-def print_solution_animation(result: SearchResult, delay: float = 0.5, detailed: bool = False, initial_matrix: List[List[str]] = None):
-    """
-    Print animated solution showing each step
-    
-    Args:
-        result: Search result containing solution
-        delay: Delay between steps in seconds
-        detailed: If True, show all player movement steps; if False, show only push moves
-        initial_matrix: Initial board matrix (needed for detailed animation)
-    """
-    if not result.success or not result.final_state:
-        print("No solution to animate")
-        return
-    
-    if detailed and initial_matrix:
-        # Show detailed solution with all player movements
-        detailed_moves = get_detailed_solution_moves(result.final_state)
-        
-        # Apply moves step by step
-        state = create_initial_state(initial_matrix)
-        
-        print("Initial State:")
-        state.print_state()
-        
-        # Apply each detailed move
-        for i, move in enumerate(detailed_moves):
-            new_state = apply_single_move(state, move)
-            
-            if new_state:
-                state = new_state
-                state.print_state()
-                
-                if delay > 0 and i < len(detailed_moves) - 1:
-                    time.sleep(delay)
-            else:
-                break
-            
-    else:
-        from move_generation import MoveGenerator
-        generator = MoveGenerator(result.final_state)
-        detailed_solution = generator.get_detailed_solution(result.final_state)
-        
-        for i, (move, state) in enumerate(detailed_solution):
-            state.print_state()
-            
-            if delay > 0 and i < len(detailed_solution) - 1:
-                time.sleep(delay)
 
 def store_solution(level_matrix: List[List[str]], result: SearchResult, level_name: str):
     """
@@ -148,10 +99,10 @@ def main():
     parser = argparse.ArgumentParser(description="Sokoban A* Solver")
     parser.add_argument("--mode", choices=["easy", "medium", "hard"], default="easy",
                           help="Difficulty mode for level selection")
-    parser.add_argument("--level", help="Specific level file to solve")
-    parser.add_argument("--max-states", type=int, default=10000000,
+    parser.add_argument("--level", help="Specific level file to solve", default=1)
+    parser.add_argument("--max-states", type=int, default=1000000,
                        help="Maximum states to explore")
-    parser.add_argument("--max-time", type=float, default=30000.0,
+    parser.add_argument("--max-time", type=float, default=300.0,
                        help="Maximum time in seconds")
     parser.add_argument("--no-deadlock", action="store_true",
                        help="Disable deadlock detection")
@@ -179,7 +130,6 @@ def main():
         use_deadlock_detection=not args.no_deadlock,
     )
 
-    # result.solution = get_detailed_solution_moves(result.final_state) if result.success else []
     print(result)
     store_solution(matrix, result, level_name=level_name)
 

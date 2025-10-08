@@ -2,14 +2,13 @@
 Deadlock Detection for Sokoban.
 """
 
-from typing import Set, Tuple, List
-from collections import deque
-from sokoban_state import State, create_initial_state
+from typing import Set, Tuple
+from sokoban_state import AStarState
 
 class DeadlockDetector:
     """Detects deadlocks in Sokoban states."""
-    
-    def __init__(self, state):
+
+    def __init__(self, state: AStarState):
         """Initialize with a Sokoban state."""
         self.state = state
         self.matrix = state.matrix
@@ -113,7 +112,7 @@ class DeadlockDetector:
                 self.walls_cache[pos] = True  # Out of bounds is wall.
         return self.walls_cache[pos]
 
-def detect_deadlock(state: State) -> bool:
+def detect_deadlock(state: AStarState) -> bool:
     """
     Interface for detecting deadlocks in a state.
     

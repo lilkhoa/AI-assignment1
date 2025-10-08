@@ -2,9 +2,7 @@
 Heuristic Functions.
 """
 
-from typing import Set, Tuple, List
-from collections import deque
-import math
+from typing import Tuple, List
 
 class SokobanHeuristics:
     """The heuristic functions for Sokoban puzzle solving."""
