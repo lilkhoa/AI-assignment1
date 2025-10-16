@@ -96,7 +96,7 @@ class SokobanHeuristics:
             )
             player_cost = max(0, min_player_distance - 1)
         
-        # Deadlock penalty (simple version - boxes in corners without goals)
+        # Deadlock penalty
         deadlock_penalty = SokobanHeuristics._calculate_deadlock_penalty(state)
         
         return base_cost + player_cost + deadlock_penalty
@@ -105,7 +105,6 @@ class SokobanHeuristics:
     def _calculate_deadlock_penalty(state) -> int:
         """
         Calculate penalty for boxes that might be in deadlock positions
-        Simple version: check for boxes in corners that are not goals
         """
         penalty = 0
         boxes = state.get_boxes_not_on_goals()
