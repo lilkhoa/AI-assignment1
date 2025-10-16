@@ -99,13 +99,84 @@ class State:
             print(line)
         print()
 
-
-class AStarState(State):
-    """State class specifically for A* search."""
+class DFSState(State):
+    """State class for DFS search (no cost tracking)."""
     
     def __init__(self, matrix: List[List[str]], player_pos: Tuple[int, int], 
                  box_positions: Set[Tuple[int, int]], goal_positions: Set[Tuple[int, int]]):
-        """Initialize A* state."""
+        """
+        Initialize DFS state.
+        
+        Args:
+            matrix: 2D list representing the Sokoban board.
+            player_pos: (x, y) position of the player.
+            box_positions: Set of (x, y) box positions.
+            goal_positions: Set of (x, y) goal positions.
+        """
+        super().__init__(matrix, player_pos, box_positions, goal_positions)
+    
+    def __lt__(self, other):
+        """
+        Optional: DFS doesn't use priority comparison, 
+        but define this for compatibility if needed.
+        """
+        return False  
+    
+    def copy(self):
+        """Create a deep copy of this DFS state."""
+        new_state = super().copy()
+        return new_state
+def create_initial_dfs_state(matrix: List[List[str]]) -> DFSState:
+    """
+    Create initial DFS state from a level matrix.
+    
+    Args:
+        matrix: 2D list representing the level.
+        
+    Returns:
+        DFSState: Initial state of the puzzle.
+    """
+    player_pos = None
+    box_positions = set()
+    goal_positions = set()
+    clean_matrix = []
+    
+    # Process matrix to extract positions and clean board
+    for y, row in enumerate(matrix):
+        clean_row = []
+        for x, cell in enumerate(row):
+            if cell == '@':  # Player
+                player_pos = (x, y)
+                clean_row.append(' ')
+            elif cell == '+':  # Player on goal
+                player_pos = (x, y)
+                goal_positions.add((x, y))
+                clean_row.append(' ')
+            elif cell == '$':  # Box
+                box_positions.add((x, y))
+                clean_row.append(' ')
+            elif cell == '*':  # Box on goal
+                box_positions.add((x, y))
+                goal_positions.add((x, y))
+                clean_row.append(' ')
+            elif cell == '.':  # Goal
+                goal_positions.add((x, y))
+                clean_row.append(' ')
+            else:  # Wall or space
+                clean_row.append(cell)
+        clean_matrix.append(clean_row)
+    
+    if player_pos is None:
+        raise ValueError("No player position found in the level")
+    
+    return DFSState(clean_matrix, player_pos, box_positions, goal_positions)
+
+class AStarState(State):
+    """State class specifically for A* search with cost tracking."""
+    
+    def __init__(self, matrix: List[List[str]], player_pos: Tuple[int, int], 
+                 box_positions: Set[Tuple[int, int]], goal_positions: Set[Tuple[int, int]]):
+        """Initialize A* state with cost tracking."""
         super().__init__(matrix, player_pos, box_positions, goal_positions)
         self.g_cost = 0  # Cost from start
         self.h_cost = 0  # Heuristic cost to goal
@@ -131,7 +202,7 @@ def create_initial_state(matrix: List[List[str]]) -> AStarState:
         matrix: 2D list representing the level.
         
     Returns:
-        AStarState: Initial state of the puzzle.
+        SokobanState: Initial state of the puzzle.
     """
     player_pos = None
     box_positions = set()

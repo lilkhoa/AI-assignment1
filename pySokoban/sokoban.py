@@ -319,7 +319,7 @@ def movePlayer(direction,myLevel):
             print("There is a wall here")
     
     drawLevel(matrix)
-    
+
     print("Boxes remaining: " + str(len(myLevel.getBoxes())))
     
     if len(myLevel.getBoxes()) == 0:
@@ -358,7 +358,7 @@ target_found = False
 # For auto-solving
 solver = True
 if solver:
-    with open(f'./levels/solver/{current_level}', 'r') as f:
+    with open(f'pySokoban/levels/solver/{current_level}', 'r') as f:
         solution = f.readlines()[-1].strip()
     solution += "E"
 

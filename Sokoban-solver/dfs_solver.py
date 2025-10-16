@@ -13,41 +13,9 @@ from sokoban_state import AStarState
 from move_generation import MoveGenerator
 from heuristics import get_heuristic_function
 from deadlock_detection import detect_deadlock
-
-class SearchResult:
-    """Container for search results."""
-    
-    def __init__(self, success: bool, solution: List[str] = None, 
-                 states_explored: int = 0, time_taken: float = 0.0,
-                 final_state: AStarState = None, error_message: str = None,
-                 memory_used_mb: float = 0.0):
-        self.success = success
-        self.solution = solution or []
-        self.states_explored = states_explored
-        self.time_taken = time_taken
-        self.final_state = final_state
-        self.error_message = error_message
-        self.memory_used_mb = memory_used_mb
-    
-    def __str__(self):
-        if self.success:
-            return (f"Solution found in {self.time_taken:.2f}s\n"
-                   f"States explored: {self.states_explored}\n"
-                   f"Memory used: {self.memory_used_mb:.2f} MB\n"
-                   f"Solution length: {len(self.solution)} moves\n"
-                   f"Solution: {''.join(self.solution)}")
-        else:
-            return (f"No solution found in {self.time_taken:.2f}s\n"
-                   f"States explored: {self.states_explored}\n"
-                   f"Memory used: {self.memory_used_mb:.2f} MB\n"
-                   f"Error: {self.error_message or 'Unknown'}")
-
-def get_memory_usage_mb() -> float:
-    """Get current memory usage in MB."""
-    process = psutil.Process(os.getpid())
-    return process.memory_info().rss / 1024 / 1024
-
-class AStarSolver:
+from astar_solver import SearchResult, get_memory_usage_mb
+from sokoban_state import DFSState 
+class DFSSolver:
     """A* search algorithm implementation for Sokoban."""
     
     def __init__(self, max_states: int = 100000, max_time: float = 300.0, use_deadlock_detection: bool = True):
@@ -60,31 +28,25 @@ class AStarSolver:
             max_time: Maximum time in seconds before timeout.
             use_deadlock_detection: Whether to use deadlock pruning.
         """
-        self.heuristic_func = get_heuristic_function()
+
         self.max_states = max_states
         self.max_time = max_time
         self.use_deadlock_detection = use_deadlock_detection
         
-        # Search statistics
+        
         self.states_explored = 0
         self.states_generated = 0
         self.deadlocks_detected = 0
         self.duplicate_states = 0
         
-    def solve(self, initial_state: AStarState) -> SearchResult:
+    def solve(self, initial_state: DFSState) -> SearchResult: 
         """
-        Solve the Sokoban puzzle using A* search.
         
-        Args:
-            initial_state: Starting state of the puzzle.
-            
-        Returns:
-            SearchResult containing solution and statistics.
         """
         start_time = time.time()
         initial_memory = get_memory_usage_mb()
         
-        # Reset statistics.
+       
         self.states_explored = 0
         self.states_generated = 0
         self.deadlocks_detected = 0
@@ -103,21 +65,9 @@ class AStarSolver:
             )
         
         # Initialize search data structures.
-        open_list = []  # Priority queue (heap).
-        closed_set = set()  # Set of explored state keys.
-        state_costs = {}  # Best known g-costs for states.
-        
-        # Calculate initial heuristic.
-        initial_state.h_cost = self.heuristic_func(initial_state)
-        initial_state.g_cost = 0
-        initial_state.f_cost = initial_state.g_cost + initial_state.h_cost
-        
-        heapq.heappush(open_list, (initial_state.f_cost, 0, initial_state))
-        state_costs[initial_state.get_state_key()] = 0
-        
-        # Main search loop.
-        while open_list:
-            # Check timeout.
+        stack=[initial_state]
+        closed_set = set()
+        while stack:
             if time.time() - start_time > self.max_time:
                 final_memory = get_memory_usage_mb()
                 return SearchResult(
@@ -128,7 +78,7 @@ class AStarSolver:
                     memory_used_mb=final_memory - initial_memory,
                 )
             
-            # Check state limit.
+            # Check limit 
             if self.states_explored >= self.max_states:
                 final_memory = get_memory_usage_mb()
                 return SearchResult(
@@ -139,19 +89,18 @@ class AStarSolver:
                     memory_used_mb=final_memory - initial_memory,
                 )
             
-            # Get next state from priority queue.
-            f_cost, tiebreaker, current_state = heapq.heappop(open_list)
-            
-            # Skip if we've already explored a better path to this state.
+            # Pop 
+            current_state = stack.pop()
             state_key = current_state.get_state_key()
+            
             if state_key in closed_set:
                 continue
             
-            # Mark state as explored.
+            # check visited
             closed_set.add(state_key)
             self.states_explored += 1
             
-            # Check if goal reached.
+            # Check  goal 
             if current_state.is_goal_state():
                 solution_moves = MoveGenerator(current_state).get_solution_path(current_state)
                 final_memory = get_memory_usage_mb()
@@ -164,7 +113,7 @@ class AStarSolver:
                     memory_used_mb=final_memory - initial_memory,
                 )
             
-            # Generate successor states.
+            # Generate  states.
             move_generator = MoveGenerator(current_state)
             successors = move_generator.get_successor_states()
             
@@ -176,27 +125,14 @@ class AStarSolver:
                     self.deadlocks_detected += 1
                     continue
                 
-                # Calculate costs.
-                successor.g_cost = current_state.g_cost + 1  # Each move has cost 1.
-                successor.h_cost = self.heuristic_func(successor)
-                successor.f_cost = successor.g_cost + successor.h_cost
-                
                 successor_key = successor.get_state_key()
                 
-                # Skip if we've seen this state with better cost.
-                if (successor_key in state_costs and 
-                    state_costs[successor_key] <= successor.g_cost):
+                if successor_key in closed_set:
                     self.duplicate_states += 1
                     continue
                 
-                # Skip if already in closed set with better cost.
-                if successor_key in closed_set:
-                    continue
-                
-                # Update best known cost and add to open list.
-                state_costs[successor_key] = successor.g_cost
-                heapq.heappush(open_list, 
-                              (successor.f_cost, self.states_generated, successor))
+                # Push 
+                stack.append(successor)
         
         # No solution found.
         final_memory = get_memory_usage_mb()
@@ -204,7 +140,7 @@ class AStarSolver:
             success=False,
             states_explored=self.states_explored,
             time_taken=time.time() - start_time,
-            error_message="No solution exists (open list exhausted)",
+            error_message="No solution exists (stack exhausted)",
             memory_used_mb=final_memory - initial_memory,
         )
     
@@ -217,8 +153,8 @@ class AStarSolver:
             'duplicate_states': self.duplicate_states,
             'deadlock_pruning_enabled': self.use_deadlock_detection
         }
-
-class SokobanAStar:
+###############################################################################################################
+class SokobanDFS:
     """Main interface for Sokoban A* solving."""
     
     def __init__(self):
@@ -249,7 +185,7 @@ class SokobanAStar:
             initial_state = create_initial_state(matrix)
             
             # Create solver and solve
-            self.solver = AStarSolver(
+            self.solver = DFSSolver(
                 max_states=max_states,
                 max_time=max_time,
                 use_deadlock_detection=use_deadlock_detection

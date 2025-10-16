@@ -1,19 +1,22 @@
 """
-Heuristic Functions.
+Heuristic Functions
 """
 
-from typing import Tuple, List
+from typing import Set, Tuple, List
+from collections import deque
+import math
+from deadlock_detection import detect_deadlock
 
 class SokobanHeuristics:
-    """The heuristic functions for Sokoban puzzle solving."""
+    """Collection of heuristic functions for Sokoban puzzle solving."""
     
     @staticmethod
-    def _manhattan_distance(pos1: Tuple[int, int], pos2: Tuple[int, int]) -> int:
+    def manhattan_distance(pos1: Tuple[int, int], pos2: Tuple[int, int]) -> int:
         """Calculate Manhattan distance between two positions"""
         return abs(pos1[0] - pos2[0]) + abs(pos1[1] - pos2[1])
     
     @staticmethod
-    def _simple_manhattan_heuristic(state) -> int:
+    def simple_manhattan_heuristic(state) -> int:
         """
         Simple heuristic: sum of Manhattan distances from each box to the nearest goal.
         Possibly there are 2 boxes with the same nearest goal. 
@@ -26,13 +29,13 @@ class SokobanHeuristics:
         goals = state.get_goals_without_boxes()
         
         for box in boxes:
-            min_dist = min(SokobanHeuristics._manhattan_distance(box, goal) for goal in goals)
+            min_dist = min(SokobanHeuristics.manhattan_distance(box, goal) for goal in goals)
             total_distance += min_dist
             
         return total_distance
     
     @staticmethod
-    def _hungarian_assignment_heuristic(state) -> int:
+    def hungarian_assignment_heuristic(state) -> int:
         """
         Hungarian algorithm-based heuristic for optimal box-goal assignment.
         """
@@ -48,7 +51,7 @@ class SokobanHeuristics:
         if len(boxes) <= 4 and len(goals) <= 4:
             return SokobanHeuristics._min_cost_assignment(boxes, goals)
         else:
-            return SokobanHeuristics._simple_manhattan_heuristic(state)
+            return SokobanHeuristics.simple_manhattan_heuristic(state)
     
     @staticmethod
     def _min_cost_assignment(boxes: List[Tuple[int, int]], 
@@ -66,7 +69,7 @@ class SokobanHeuristics:
         from itertools import permutations
         
         for goal_perm in permutations(goals, min_boxes):
-            cost = sum(SokobanHeuristics._manhattan_distance(boxes[i], goal_perm[i]) 
+            cost = sum(SokobanHeuristics.manhattan_distance(boxes[i], goal_perm[i]) 
                       for i in range(min_boxes))
             min_cost = min(min_cost, cost)
             
@@ -84,14 +87,14 @@ class SokobanHeuristics:
             return 0
         
         # Base assignment cost
-        base_cost = SokobanHeuristics._hungarian_assignment_heuristic(state)
+        base_cost = SokobanHeuristics.hungarian_assignment_heuristic(state)
         
         # Player positioning cost
         player_cost = 0
         boxes = state.get_boxes_not_on_goals()
         if boxes:
             min_player_distance = min(
-                SokobanHeuristics._manhattan_distance(state.player_pos, box) 
+                SokobanHeuristics.manhattan_distance(state.player_pos, box) 
                 for box in boxes
             )
             player_cost = max(0, min_player_distance - 1)
