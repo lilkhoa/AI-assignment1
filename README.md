@@ -1,13 +1,86 @@
-This file is a guide for how to render the Sokoban game and use the Sokoban solver.
+# 🎮 Sokoban Solver & Visualizer
 
-Step 1. Install pygame.
+A comprehensive Sokoban puzzle solver featuring algorithms (A*, DFS) and interactive pygame visualization.
 
-Step 2. Place your level file in the pySokoban/levels/test directory. You can see some examples in the pySokoban/levels/test directory.
+## 🚀 Quick Start
 
-Step 3. Run your algorithm and place the solution in a file belonging to the pySokoban/levels/solver directory. The content of the file should be a string of characters, representing the player's moves. You can see some examples in the pySokoban/levels/solver directory.
+### Prerequisites
+```bash
+pip install pygame numpy psutil
+```
 
-**Note**: The file name of your solution file (in /pySokoban/levels/solver) should be exactly the same as the file name of your level file (in /pySokoban/levels/test). For example, if your level file is test_level_01.txt, your solution file should be test_level_01.txt as well.
+## 📋 Complete Workflow Guide
 
-Step 4. Run the sokoban.py file in the pySokoban directory and see the result. In order to see your level and solution, you need to set your `current_level` as well as `solver=True` in the sokoban.py file. When the pygame window opens, press any key to start the simulation.
+### Step 1: Prepare Your Level
 
-**Note**: You can change this workflow by making changes to the pySokoban/sokoban.py file. 
+**Option A: Use Existing Levels**
+- Pre-built levels are available in `/Sokoban-solver/test_level/`:
+  - `easy` folder - Simple puzzles for testing
+  - `medium` folder - Moderate difficulty
+  - `hard` folder - Complex challenges
+
+**Option B: Create Custom Level**
+1. Create a new `.txt` file in `/Sokoban-solver/test_level/--/` (-- is any difficulty folder).
+2. Use standard Sokoban notation, for example:
+   ```
+   #########
+   #@      #    # = Wall
+   # $$$...#    @ = Player  
+   #    ###     $ = Box
+   #    #       . = Target
+   ######       * = Box on target
+                + = Player on target
+   ```
+**Note**: If you're going to create a custom level, let's say an easy level, you should name it `easy_X.txt`, where `X` is the level number that does not conflict with existing levels and place it in the `easy` folder.
+
+### Step 2: Run Your Algorithm
+
+```bash
+cd Sokoban-solver
+python main.py --mode [easy/medium/hard] --level [1/2/3/...] --solver [DFS/AStar]
+```
+This command will execute the selected algorithm on your specified level.
+**Example**:
+```bash
+python main.py --mode easy --level 1 --solver AStar
+```
+
+### Step 3: View Search Results
+
+After running the algorithm, a search result will be printed in the terminal:
+```
+Solver: [solver name]
+Solution found in Xs
+States explored: Y
+Memory used: Z MB
+Solution length: N moves
+Solution: [solution string]
+```
+
+**Example Search Result**:
+```
+Solver: AStar
+Solution found in 0.01s
+States explored: 28
+Memory used: 0.19 MB
+Solution length: 46 moves
+Solution: RRDRULLLDRURRDRULLLDRURRDRULLLDRDDLURURULLLDRR
+```
+
+### Step 4: Visualize with pySokoban
+You can visualize the solution with the beautiful `pySokoban` interface. To do that, first, you have to change the `current_level` variable in `pySokoban/sokoban.py` to point to your level that you solved in Step 2. Also, you need to change the `solver_type` variable to match the solver you used (e.g., `AStar` or `DFS`). Then, run:
+
+```bash
+cd pySokoban
+python sokoban.py
+```
+
+These commands will:
+1. Load your level from `pySokoban/levels/test/`
+2. Load the corresponding solution from `pySokoban/levels/solver/`
+3. Display the puzzle and animate the solution
+
+**Note**: In the `pySokoban/sokoban.py` file, you can also change the `theme` variable to switch between different visual themes available in the `themes/` folder. Furthermore, by changing the `solver` variable to `False`, you can manually play the game using keyboard controls.
+
+## 🙏 Acknowledgements
+Many thanks to the creators of [pySokoban](https://github.com/kazantzakis/pySokoban) for providing a fantastic visualization tool. 

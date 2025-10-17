@@ -17,7 +17,6 @@ class DFSSolver:
         Initialize DFS solver with configuration.
 
         Args:
-            heuristic_name: Name of heuristic function to use.
             max_states: Maximum states to explore before giving up.
             max_time: Maximum time in seconds before timeout.
             use_deadlock_detection: Whether to use deadlock pruning.
@@ -62,6 +61,7 @@ class DFSSolver:
                 time_taken=time.time() - start_time,
                 final_state=initial_state,
                 memory_used_mb=final_memory - initial_memory,
+                solver_name="DFS",
             )
         
         # Initialize search data structures.
@@ -76,6 +76,7 @@ class DFSSolver:
                     time_taken=time.time() - start_time,
                     error_message=f"Timeout after {self.max_time}s",
                     memory_used_mb=final_memory - initial_memory,
+                    solver_name="DFS",
                 )
             
             # Check limit
@@ -87,6 +88,7 @@ class DFSSolver:
                     time_taken=time.time() - start_time,
                     error_message=f"State limit reached ({self.max_states})",
                     memory_used_mb=final_memory - initial_memory,
+                    solver_name="DFS",
                 )
             
             # Pop
@@ -111,6 +113,7 @@ class DFSSolver:
                     time_taken=time.time() - start_time,
                     final_state=current_state,
                     memory_used_mb=final_memory - initial_memory,
+                    solver_name="DFS",
                 )
             
             # Generate states.
@@ -142,6 +145,7 @@ class DFSSolver:
             time_taken=time.time() - start_time,
             error_message="No solution exists (stack exhausted)",
             memory_used_mb=final_memory - initial_memory,
+            solver_name="DFS",
         )
 class SokobanDFS:
     """Main interface for Sokoban DFS solving."""
@@ -186,6 +190,7 @@ class SokobanDFS:
                 success=False,
                 error_message=f"Error during solving: {str(e)}",
                 memory_used_mb=0.0,
+                solver_name="DFS",
             )
             self.last_result = error_result
             return error_result
