@@ -99,13 +99,33 @@ class State:
             print(line)
         print()
 
-
-class AStarState(State):
-    """State class specifically for A* search."""
+class DFSState(State):
+    """State class for DFS search."""
     
     def __init__(self, matrix: List[List[str]], player_pos: Tuple[int, int], 
                  box_positions: Set[Tuple[int, int]], goal_positions: Set[Tuple[int, int]]):
-        """Initialize A* state."""
+        """
+        Initialize DFS state.
+        
+        Args:
+            matrix: 2D list representing the Sokoban board.
+            player_pos: (x, y) position of the player.
+            box_positions: Set of (x, y) box positions.
+            goal_positions: Set of (x, y) goal positions.
+        """
+        super().__init__(matrix, player_pos, box_positions, goal_positions)  
+    
+    def copy(self):
+        """Create a deep copy of this DFS state."""
+        new_state = super().copy()
+        return new_state
+
+class AStarState(State):
+    """State class specifically for A* search"""
+    
+    def __init__(self, matrix: List[List[str]], player_pos: Tuple[int, int], 
+                 box_positions: Set[Tuple[int, int]], goal_positions: Set[Tuple[int, int]]):
+        """Initialize A* state"""
         super().__init__(matrix, player_pos, box_positions, goal_positions)
         self.g_cost = 0  # Cost from start
         self.h_cost = 0  # Heuristic cost to goal
@@ -123,7 +143,7 @@ class AStarState(State):
         new_state.f_cost = self.f_cost
         return new_state
 
-def create_initial_state(matrix: List[List[str]]) -> AStarState:
+def create_initial_state(matrix: List[List[str]]) -> State:
     """
     Create initial state from a level matrix.
     
@@ -131,7 +151,7 @@ def create_initial_state(matrix: List[List[str]]) -> AStarState:
         matrix: 2D list representing the level.
         
     Returns:
-        AStarState: Initial state of the puzzle.
+        State: Initial state of the puzzle.
     """
     player_pos = None
     box_positions = set()
@@ -166,4 +186,4 @@ def create_initial_state(matrix: List[List[str]]) -> AStarState:
     if player_pos is None:
         raise ValueError("No player position found in the level")
     
-    return AStarState(clean_matrix, player_pos, box_positions, goal_positions)
+    return State(clean_matrix, player_pos, box_positions, goal_positions)
