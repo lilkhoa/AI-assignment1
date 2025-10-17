@@ -11,7 +11,9 @@ from typing import List
 # Add the parent directory to path for imports.
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from astar_solver import SokobanAStar, SearchResult
+from astar_solver import SokobanAStar
+from dfs_solver import SokobanDFS
+from utils import SearchResult
 from move_generation import get_detailed_solution_moves
 
 def load_level_from_original_format(level_path: str) -> List[List[str]]:
@@ -46,7 +48,7 @@ def print_level(matrix: List[List[str]], level_name: str = ""):
         print(''.join(row))
     print()
 
-def store_solution(level_matrix: List[List[str]], result: SearchResult, level_name: str):
+def store_solution(level_matrix: List[List[str]], result: SearchResult, level_name: str, solver_name: str = "DFS"):
     """
     Store the detailed solution moves into a file in pySokoban format.
     We store the level in the pySokoban directory for rendering as well.
@@ -65,9 +67,9 @@ def store_solution(level_matrix: List[List[str]], result: SearchResult, level_na
     
     # Store the solution in the ./result directory
     level_mode = level_name.split('_')[0]  # Extract mode from level name
-    level_dir = f'./results/{level_mode}'
+    level_dir = f'./results/{solver_name}/{level_mode}'
     os.makedirs(level_dir, exist_ok=True)
-    result_file_path = f'./results/{level_mode}/{level_name}_solution.txt'
+    result_file_path = f'./results/{solver_name}/{level_mode}/{level_name}_solution.txt'
     try:
         with open(result_file_path, 'w') as f:
             f.write(''.join(detailed_moves))
@@ -100,6 +102,7 @@ def main():
     parser.add_argument("--mode", choices=["easy", "medium", "hard"], default="easy",
                           help="Difficulty mode for level selection")
     parser.add_argument("--level", help="Specific level file to solve", default=1)
+    parser.add_argument("--solver", choices=["DFS", "AStar"], default="DFS")
     parser.add_argument("--max-states", type=int, default=1000000,
                        help="Maximum states to explore")
     parser.add_argument("--max-time", type=float, default=300.0,
@@ -122,7 +125,7 @@ def main():
     
     print_level(matrix, level_name)
     
-    solver = SokobanAStar()
+    solver = SokobanDFS() if args.solver == "DFS" else SokobanAStar()
     result = solver.solve_puzzle(
         matrix,
         max_states=args.max_states,
@@ -131,7 +134,7 @@ def main():
     )
 
     print(result)
-    store_solution(matrix, result, level_name=level_name)
+    store_solution(matrix, result, level_name, solver_name=args.solver)
 
 if __name__ == "__main__":
     main()
