@@ -337,7 +337,6 @@ def initLevel(level_set,level_name):
     # Draw this level
     drawLevel(myLevel.getMatrix())
     
-
 # Create the environment
 myEnvironment = Environment()
 
@@ -348,7 +347,7 @@ theme = "default"
 level_set = "test"
 
 # Set the start Level
-current_level = "medium_2.txt"
+current_level = "easy_1.txt"
 
 # Initialize Level
 initLevel(level_set,current_level)
@@ -358,28 +357,33 @@ target_found = False
 # For auto-solving
 solver = True
 if solver:
-    with open(f'./levels/solver/{current_level}', 'r') as f:
-        solution = f.readlines()[-1].strip()
-    solution += "E"
+    # Choose the solver
+    solver_type = "AStar"  # Options: DFS, AStar
+    try:
+        with open(f'./levels/solver/{solver_type}/{current_level}', 'r') as f:
+            solution = f.readlines()[-1].strip()
+        solution += "E"
+    except Exception as e:
+        print(f"Error loading solution: {e}")
+        solver = False
 
 while True:
     if solver:
         for event in pygame.event.get():
-            if event.type == pygame.KEYDOWN:
-                for move in solution:
-                    if move == 'L':
-                        movePlayer("L",myLevel)
-                    elif move == 'R':
-                        movePlayer("R",myLevel)
-                    elif move == 'D':
-                        movePlayer("D",myLevel)
-                    elif move == 'U':
-                        movePlayer("U",myLevel)
-                    elif move == 'E':
-                        solver = False
-                        pygame.quit()
-                        sys.exit()
-                    time.sleep(0.5)
+            for move in solution:
+                if move == 'L':
+                    movePlayer("L",myLevel)
+                elif move == 'R':
+                    movePlayer("R",myLevel)
+                elif move == 'D':
+                    movePlayer("D",myLevel)
+                elif move == 'U':
+                    movePlayer("U",myLevel)
+                elif move == 'E':
+                    solver = False
+                    pygame.quit()
+                    sys.exit()
+                time.sleep(0.5)
         
     for event in pygame.event.get():
         if event.type == pygame.KEYDOWN:

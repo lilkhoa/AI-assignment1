@@ -64,6 +64,7 @@ class AStarSolver:
                 time_taken=time.time() - start_time,
                 final_state=initial_state,
                 memory_used_mb=final_memory - initial_memory,
+                solver_name="AStar",
             )
         
         # Initialize search data structures.
@@ -90,6 +91,7 @@ class AStarSolver:
                     time_taken=time.time() - start_time,
                     error_message=f"Timeout after {self.max_time}s",
                     memory_used_mb=final_memory - initial_memory,
+                    solver_name="AStar",
                 )
             
             # Check state limit.
@@ -101,6 +103,7 @@ class AStarSolver:
                     time_taken=time.time() - start_time,
                     error_message=f"State limit reached ({self.max_states})",
                     memory_used_mb=final_memory - initial_memory,
+                    solver_name="AStar",
                 )
             
             # Get next state from priority queue.
@@ -126,6 +129,7 @@ class AStarSolver:
                     time_taken=time.time() - start_time,
                     final_state=current_state,
                     memory_used_mb=final_memory - initial_memory,
+                    solver_name="AStar",
                 )
             
             # Generate successor states.
@@ -170,6 +174,7 @@ class AStarSolver:
             time_taken=time.time() - start_time,
             error_message="No solution exists (open list exhausted)",
             memory_used_mb=final_memory - initial_memory,
+            solver_name="AStar",
         )
 
 class SokobanAStar:
@@ -216,6 +221,7 @@ class SokobanAStar:
                 success=False,
                 error_message=f"Error during solving: {str(e)}",
                 memory_used_mb=0.0,
+                solver_name="AStar",
             )
             self.last_result = error_result
             return error_result

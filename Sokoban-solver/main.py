@@ -80,7 +80,7 @@ def store_solution(level_matrix: List[List[str]], result: SearchResult, level_na
 
     # This one is for rendering
     # Create file path
-    file_path = '../pySokoban/levels/solver/{}.txt'.format(level_name)
+    file_path = f'../pySokoban/levels/solver/{solver_name}/{level_name}.txt'
     try:
         with open(file_path, 'w') as f:
             f.write(''.join(detailed_moves))
@@ -88,7 +88,7 @@ def store_solution(level_matrix: List[List[str]], result: SearchResult, level_na
         print(f"Error storing solution: {e}")
 
     # Store the level matrix
-    level_file_path = '../pySokoban/levels/test/{}.txt'.format(level_name)
+    level_file_path = f'../pySokoban/levels/test/{level_name}.txt'
     try:
         with open(level_file_path, 'w') as f:
             for row in level_matrix:
@@ -114,6 +114,7 @@ def main():
 
     level_to_solve = f"test_level/{args.mode}/{args.mode}_{args.level}.txt"
     level_name = f"{args.mode}_{args.level}"
+    solver_name = args.solver
 
     if not os.path.exists(level_to_solve):
         print(f"Level file not found: {level_to_solve}")
@@ -125,7 +126,7 @@ def main():
     
     print_level(matrix, level_name)
     
-    solver = SokobanDFS() if args.solver == "DFS" else SokobanAStar()
+    solver = SokobanDFS() if solver_name == "DFS" else SokobanAStar()
     result = solver.solve_puzzle(
         matrix,
         max_states=args.max_states,
@@ -134,7 +135,7 @@ def main():
     )
 
     print(result)
-    store_solution(matrix, result, level_name, solver_name=args.solver)
+    store_solution(matrix, result, level_name, solver_name=solver_name)
 
 if __name__ == "__main__":
     main()
