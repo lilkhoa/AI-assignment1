@@ -122,7 +122,6 @@ class DFSState(State):
 
 class AStarState(State):
     """State class specifically for A* search"""
-    
     def __init__(self, matrix: List[List[str]], player_pos: Tuple[int, int], 
                  box_positions: Set[Tuple[int, int]], goal_positions: Set[Tuple[int, int]]):
         """Initialize A* state"""
