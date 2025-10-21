@@ -347,7 +347,7 @@ theme = "default"
 level_set = "test"
 
 # Set the start Level
-current_level = "easy_1.txt"
+current_level = "medium_1.txt"
 
 # Initialize Level
 initLevel(level_set,current_level)
