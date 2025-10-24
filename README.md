@@ -82,5 +82,10 @@ These commands will:
 
 **Note**: In the `pySokoban/sokoban.py` file, you can also change the `theme` variable to switch between different visual themes available in the `themes/` folder. Furthermore, by changing the `solver` variable to `False`, you can manually play the game using keyboard controls.
 
+## 📽️ Demo Video
+A demo video showcasing the solver and visualizer can be found here:  
+* 1. [[Google Drive] Sokoban Solver Demo](https://drive.google.com/file/d/18LGaoyT4H7yV3y8GL856hdyjYtkiY9Jg/view?usp=sharing)
+* 2. [[YouTube] Sokoban Solver Demo](https://www.youtube.com/watch?v=ScrAdCWQ8jQ)
+
 ## 🙏 Acknowledgements
 Many thanks to the creators of [pySokoban](https://github.com/kazantzakis/pySokoban) for providing a fantastic visualization tool. 
