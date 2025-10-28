@@ -84,8 +84,8 @@ These commands will:
 
 ## 📽️ Demo Video
 A demo video showcasing the solver and visualizer can be found here:  
-* 1. [[Google Drive] Sokoban Solver Demo](https://drive.google.com/file/d/18LGaoyT4H7yV3y8GL856hdyjYtkiY9Jg/view?usp=sharing)
-* 2. [[YouTube] Sokoban Solver Demo](https://www.youtube.com/watch?v=ScrAdCWQ8jQ)
+* 1. [[Google Drive] Sokoban Solver Demo](https://drive.google.com/file/d/12XrZPIQhNTQ4Qrdrxq3xWw-BZA964XEB/view?usp=sharing)
+* 2. [[YouTube] Sokoban Solver Demo](https://youtu.be/LTxmywwiLzs)
 
 ## 🙏 Acknowledgements
 Many thanks to the creators of [pySokoban](https://github.com/kazantzakis/pySokoban) for providing a fantastic visualization tool. 
